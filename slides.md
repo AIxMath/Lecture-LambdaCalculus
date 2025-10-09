@@ -32,16 +32,16 @@ mdc: true
 
 <div h-5 />
 
-If you've learnt or heard of "Turing Machine", you probably know the "Chomsky Hierarchy".
+If you've learnt or heard of Turing Machine, you probably know the Chomsky Hierarchy.
 
 - Type 0: Recursively Enumerable (Turing Machine)
 - Type 1: Context-Sensitive (Linear-Bounded Automaton)
 - Type 2: Context-Free (Pushdown Automaton)
 - Type 3: Regular (Finite Automaton)
 
-There are two other models as powerful as "Turing Machine" -- the "Lambda Calculus" and "Primitive Recursion".
+There are two other models as powerful as Turing Machine -- the Lambda Calculus and Primitive Recursion.
 
-Today we are going to discuss about the "Lambda Calculus". We will explore how it originated from mathematics, crossed the bridge between mathematics and computer science, and achieved significant breakthroughs in the field of computing.
+Today we are going to discuss about the Lambda Calculus. We will explore how it originated from mathematics, crossed the bridge between mathematics and computer science, and achieved significant breakthroughs in the field of computing.
 
 ---
 
@@ -144,8 +144,6 @@ Simple. Also Effective!
 
 # Basics of Lambda Calculus -- Beta Reduction
 
-<div h-3 />
-
 Beta reduction is the fundamental computation rule in lambda calculus. It replaces bound variables with their arguments.
 
 ### Rule
@@ -169,8 +167,6 @@ $$
 ---
 
 # Basics of Lambda Calculus -- Alpha Equivalence
-
-<div h-3 />
 
 Alpha equivalence allows renaming bound variables without changing the function's meaning.
 
@@ -198,8 +194,6 @@ $$
 ---
 
 # Basics of Lambda Calculus -- Currying
-
-<div h-1 />
 
 Currying transforms multi-argument functions into sequences of single-argument functions.
 
@@ -253,3 +247,150 @@ $$
 $$
 
 ---
+
+<div h-35 />
+
+<div text-center text-5xl>Let's Create the World</div>
+
+<div h-8 />
+
+<div text-center text-3xl color-gray>According to the Church-Turing thesis,</div>
+<div h-1 />
+<div text-center text-3xl color-gray>Lambda Calculus is equally powerful as Turing Machine.</div>
+
+---
+
+# Church Booleans
+
+In pure lambda calculus, we need to represent boolean values using only functions.
+
+### Definition
+
+$$\text{TRUE} = \lambda xy.x$$
+$$\text{FALSE} = \lambda xy.y$$
+
+### Intuition
+
+- `TRUE` takes two arguments and returns the first one
+$$\text{TRUE} \; a \; b = (\lambda xy.x) \; a \; b \rightarrow_\beta a$$
+
+- `FALSE` takes two arguments and returns the second one
+
+$$\text{FALSE} \; a \; b = (\lambda xy.y) \; a \; b \rightarrow_\beta b$$
+
+---
+
+# Boolean Operations
+
+Now we can define logical operations using Church booleans.
+
+### AND Operation
+
+$$\text{AND} = \lambda pq.pqp$$
+
+### OR Operation  
+
+$$\text{OR} = \lambda pq.ppq$$
+
+### NOT Operation
+
+$$\text{NOT} = \lambda p.p \; \text{FALSE} \; \text{TRUE}$$
+
+### Example
+
+$$\text{AND} \; \text{TRUE} \; \text{TRUE} = (\lambda pq.pqp) \; \text{TRUE} \; \text{TRUE} \rightarrow_\beta \text{TRUE} \; \text{TRUE} \; \text{TRUE} \rightarrow_\beta \text{TRUE}$$
+
+$$\text{NOT} \; \text{TRUE} = (\lambda p.p \; \text{FALSE} \; \text{TRUE}) \; \text{TRUE} \rightarrow_\beta \text{TRUE} \; \text{FALSE} \; \text{TRUE} \rightarrow_\beta \text{FALSE}$$
+
+---
+
+# Conditional Logic: IF-THEN-ELSE
+
+### Definition
+
+$$\text{IF} = \lambda pab.pab$$
+
+### Usage
+
+$$\text{IF} \; \text{condition} \; \text{then-branch} \; \text{else-branch}$$
+
+### Examples
+
+$$
+\begin{align}
+\text{IF} \; \text{TRUE} \; x \; y &= (\lambda pab.pab) \; \text{TRUE} \; x \; y \\
+&\rightarrow_\beta \text{TRUE} \; x \; y \\
+&\rightarrow_\beta x
+\end{align}
+$$
+
+$$
+\begin{align}
+\text{IF} \; \text{FALSE} \; x \; y &= (\lambda pab.pab) \; \text{FALSE} \; x \; y \\
+&\rightarrow_\beta \text{FALSE} \; x \; y \\
+&\rightarrow_\beta y
+\end{align}
+$$
+
+---
+
+# Natural Numbers: Church Numerals
+
+### Definition
+
+$$0 = \lambda fx.x$$
+$$1 = \lambda fx.f \; x$$  
+$$2 = \lambda fx.f \; (f \; x)$$
+$$3 = \lambda fx.f \; (f \; (f \; x))$$
+$$\vdots$$
+$$n = \lambda fx.\underbrace{f \; (f \; (\cdots (f}_{n \text{ times}} \; x) \cdots))$$
+
+### Intuition
+
+A Church numeral $n$ is a function that applies its first argument $f$ exactly $n$ times to its second argument $x$.
+
+---
+
+# Church Numeral Operations
+
+<div h-1 />
+
+### Definition
+
+$$\text{SUCC} = \lambda nfx.f \; (n \; f \; x)$$
+
+$$\text{ADD} = \lambda mnfx.m \; f \; (n \; f \; x)$$
+
+$$\text{MULT} = \lambda mnf.m \; (n \; f)$$
+
+$$\text{EXP} = \lambda bn.n \; b$$
+
+### Examples
+
+$$\text{SUCC} \; 0 = (\lambda nfx.f \; (n \; f \; x)) \; (\lambda fx.x) \rightarrow_\beta \lambda fx.f \; x = 1$$
+
+$$
+\begin{align}
+\text{ADD} \; 2 \; 3 &\rightarrow_\beta \lambda fx.2 \; f \; (3 \; f \; x) \\
+&= \lambda fx.(\lambda fx.f(f(x)))\; f \; (\lambda fx.f(f(f(x))) \; f \; x) \\
+&= \lambda fx.(\lambda fx.f(f(x)))\; f \; f(f(f(x))) \\
+&= \lambda fx.f \; (f \; (f \; (f \; (f \; x)))) = 5
+\end{align}$$
+
+---
+
+# Predecessor and Zero Test
+
+These operations are more complex and showcase the power of lambda calculus.
+
+### Predecessor
+
+$$\text{PRED} = \lambda nfx.n \; (\lambda gh.h \; (g \; f)) \; (\lambda u.x) \; (\lambda u.u)$$
+
+Noticed that $\text{PRED} \; 0 = 0$.
+
+### Zero Test
+
+$$\text{ISZERO} = \lambda n.n \; (\lambda x.\text{FALSE}) \; \text{TRUE}$$
+
+With predecessor and zero test, we can run many complicated loops.
