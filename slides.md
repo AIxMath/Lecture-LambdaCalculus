@@ -116,7 +116,7 @@ What about a function of two variables?
 
 <div text-3xl>
 $$
-\lambda x.\lambda y.x^2+y^2\;\;\mathbf{or}\;\;\lambda xy.x^2+y^2
+\lambda x.\lambda y.x^2+y^2\;\;\text{or}\;\;\lambda xy.x^2+y^2
 $$
 </div>
 
@@ -394,3 +394,141 @@ Noticed that $\text{PRED} \; 0 = 0$.
 $$\text{ISZERO} = \lambda n.n \; (\lambda x.\text{FALSE}) \; \text{TRUE}$$
 
 With predecessor and zero test, we can run many complicated loops.
+
+---
+
+# We can do anything... Wait?
+
+<div h-5 />
+
+## Wait... Do we really need variables?
+
+<div h-2 />
+
+Consider the identity function:
+
+<div text-3xl>
+$$
+\lambda x.x
+$$
+</div>
+
+<div border="2 green rounded" v-drag="[459,229,40,48]" />
+
+<div border="2 purple rounded" v-drag="[503,229,40,48]" />
+
+<div v-drag="[405,278,143,26]" color-green>placeholder</div>
+
+<div v-drag="[505,278,229,26]" color-purple>refers to placeholder</div>
+
+<div h-3 />
+
+Can we express functions without any variables at all?
+
+<div h-3 />
+
+<div text-center text-4xl>
+Yes! Using <span color-blue>Combinators</span>
+</div>
+
+---
+
+# What are Combinators?
+
+A combinator is a lambda expression with no free variables.
+
+<div h-2 />
+
+### Examples
+
+<v-clicks>
+
+- $\mathbf{I} = \lambda x.x$ <span color-gray>(Identity)</span>
+- $\mathbf{K} = \lambda xy.x$ <span color-gray>(Constant)</span>
+- $\mathbf{S} = \lambda xyz.xz(yz)$ <span color-gray>(Substitution)</span>
+
+</v-clicks>
+
+<div h-3 />
+
+<v-click>
+
+### Why are they important?
+
+Combinators can express any lambda calculus expression without using variable names!
+
+</v-click>
+
+---
+
+# The SKI Combinator System
+
+Three simple combinators can express all of lambda calculus:
+
+<div h-2 />
+
+| Combinator | Definition | Behavior |
+|------------|------------|----------|
+| $\mathbf{I}$ | $\lambda x.x$ | Identity: returns its argument |
+| $\mathbf{K}$ | $\lambda xy.x$ | Constant: returns the first argument, ignores the second |
+| $\mathbf{S}$ | $\lambda xyz.xz(yz)$ | Substitution: applies $x$ to $z$ and applies $y$ to $z$, then applies the results |
+
+<div h-3 />
+
+### Fun Fact
+
+The $\mathbf{I}$ combinator is actually redundant! We can derive it from $\mathbf{S}$ and $\mathbf{K}$:
+
+$$\mathbf{I} = \mathbf{SKK}$$
+
+Let's verify: $\mathbf{SKK} \; a = \mathbf{S} \; \mathbf{K} \; \mathbf{K} \; a \rightarrow_\beta \mathbf{K} \; a \; (\mathbf{K} \; a) \rightarrow_\beta a$
+
+---
+
+# More Famous Combinators
+
+Beyond SKI, there are many other useful combinators with special purposes:
+
+<div h-2 />
+
+| Name | Definition | Purpose |
+|------|------------|---------|
+| $\mathbf{B}$ | $\lambda xyz.x(yz)$ | Function composition |
+| $\mathbf{C}$ | $\lambda xyz.xzy$ | Argument flip |
+| $\mathbf{W}$ | $\lambda xy.xyy$ | Duplicate argument |
+| $\mathbf{Y}$ | $\lambda f.(\lambda x.f(xx))(\lambda x.f(xx))$ | Fixed-point (recursion!) |
+| $\omega$ | $\lambda x.xx$ | Self-application |
+| $\Omega$ | $(\lambda x.xx)(\lambda x.xx)$ | Non-terminating computation |
+
+---
+
+# From Lambda Calculus to Combinators
+
+Elimination Algorithm: Any lambda expression can be systematically converted to pure combinators.
+
+<div h-2 />
+
+### Rules
+
+1. $T[x] = x$ <span color-gray text-sm>(variable)</span>
+2. $T[E_1 \; E_2] = T[E_1] \; T[E_2]$ <span color-gray text-sm>(application)</span>
+3. $T[\lambda x.x] = \mathbf{I}$ <span color-gray text-sm>(identity)</span>
+4. $T[\lambda x.E] = \mathbf{K} \; T[E]$ if $x$ not free in $E$ <span color-gray text-sm>(constant)</span>
+5. $T[\lambda x.E_1 \; E_2] = \mathbf{S} \; T[\lambda x.E_1] \; T[\lambda x.E_2]$ <span color-gray text-sm>(substitution)</span>
+
+<div h-2 />
+
+### Example: Converting $\lambda xy.x$
+
+$$
+\begin{align}
+T[\lambda xy.x] &= T[\lambda x.\lambda y.x] \\
+&= T[\lambda x.(\mathbf{K} \; x)] \\
+&= \mathbf{S} \; T[\lambda x.\mathbf{K}] \; T[\lambda x.x] \\
+&= \mathbf{S} \; (\mathbf{K} \; \mathbf{K}) \; \mathbf{I} \\
+&= \mathbf{K}
+\end{align}
+$$
+
+---
+
