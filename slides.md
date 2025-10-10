@@ -532,3 +532,80 @@ $$
 
 ---
 
+# The Problem: How Do We Implement Recursion?
+
+In pure lambda calculus, functions have no names. How can a function call itself?
+
+<div h-2 />
+
+### Consider the factorial function:
+
+$$\text{fact}(n) = \begin{cases} 1 & \text{if } n = 0 \\ n \times \text{fact}(n-1) & \text{otherwise} \end{cases}$$
+
+<div h-2 />
+
+### In lambda calculus:
+
+$$\text{FACT} = \lambda n. \text{IF} \; (\text{ISZERO} \; n) \; 1 \; (\text{MULT} \; n \; (\text{FACT} \; (\text{PRED} \; n)))$$
+
+<div h-3 />
+
+<div text-center text-2xl color-red>
+But wait! We cannot reference FACT inside its own definition!
+</div>
+
+---
+
+# Fixed Points: The Mathematical Foundation
+
+A fixed point of a function $f$ is a value $x$ such that $f(x) = x$.
+
+<div h-2 />
+
+### Examples in ordinary mathematics:
+
+- $f(x) = x^2$ has fixed points: $x = 0$ and $x = 1$
+- $f(x) = \cos(x)$ has a fixed point around $x \approx 0.739$
+
+<div h-3 />
+
+### In lambda calculus context:
+
+If $F$ is a function that takes a function as input, then $Y \; F$ should be a fixed point of $F$:
+
+$$F \; (Y \; F) = Y \; F$$
+
+<div h-2 />
+
+This means $Y \; F$ calls $F$ with itself as an argument, enabling recursion!
+
+Here we give that $\mathbf{Y} = \lambda f.(\lambda x.f \; (x \; x)) \; (\lambda x.f \; (x \; x))$ without a proof.
+
+---
+
+# Implementing Factorial with Y Combinator
+
+<div h-2 />
+
+### Step 1: Define the factorial template
+
+$$\text{FACT-TEMPLATE} = \lambda \text{fact}. \lambda n. \text{IF} \; (\text{ISZERO} \; n) \; 1 \; (\text{MULT} \; n \; (\text{fact} \; (\text{PRED} \; n)))$$
+
+### Step 2: Apply Y combinator
+
+$$\text{FACTORIAL} = \mathbf{Y} \; \text{FACT-TEMPLATE}$$
+
+### Step 3: Compute factorial of 3
+
+$$
+\begin{align}
+\text{FACTORIAL} \; 3 &= \mathbf{Y} \; \text{FACT-TEMPLATE} \; 3 \\
+&= \text{FACT-TEMPLATE} \; (\mathbf{Y} \; \text{FACT-TEMPLATE}) \; 3 \\
+&= \text{IF} \; (\text{ISZERO} \; 3) \; 1 \; (\text{MULT} \; 3 \; ((\mathbf{Y} \; \text{FACT-TEMPLATE}) \; 2)) \\
+&= \text{MULT} \; 3 \; ((\mathbf{Y} \; \text{FACT-TEMPLATE}) \; 2) \\
+&= \text{MULT} \; 3 \; (\text{MULT} \; 2 \; ((\mathbf{Y} \; \text{FACT-TEMPLATE}) \; 1)) \\
+&= \text{MULT} \; 3 \; (\text{MULT} \; 2 \; (\text{MULT} \; 1 \; 1)) = 6
+\end{align}
+$$
+
+---
