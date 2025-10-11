@@ -189,7 +189,7 @@ $$
 \lambda x.x + z \equiv_\alpha \lambda y.y + z \quad \text{(z remains free)}
 $$
 
-**Important**: Free variables cannot be renamed arbitrarily.
+Important: Free variables cannot be renamed arbitrarily.
 
 ---
 
@@ -441,23 +441,15 @@ A combinator is a lambda expression with no free variables.
 
 ### Examples
 
-<v-clicks>
-
 - $\mathbf{I} = \lambda x.x$ <span color-gray>(Identity)</span>
 - $\mathbf{K} = \lambda xy.x$ <span color-gray>(Constant)</span>
 - $\mathbf{S} = \lambda xyz.xz(yz)$ <span color-gray>(Substitution)</span>
 
-</v-clicks>
-
 <div h-3 />
-
-<v-click>
 
 ### Why are they important?
 
 Combinators can express any lambda calculus expression without using variable names!
-
-</v-click>
 
 ---
 
@@ -881,6 +873,12 @@ Allows self-referential types, enabling recursion while maintaining type safety.
 
 ---
 
+<div h-45 />
+
+<div text-center text-5xl>Go Across the Math-Computer Bridge!</div>
+
+---
+
 # The Curry-Howard Correspondence
 
 One of the most profound discoveries in logic and computer science.
@@ -897,7 +895,7 @@ One of the most profound discoveries in logic and computer science.
 
 - William Howard (1969): Made the connection precise for lambda calculus and natural deduction
 
-- Also known as the **Propositions-as-Types Interpretation**
+- Also known as the Propositions-as-Types Interpretation
 
 <div h-3 />
 
@@ -936,72 +934,68 @@ The logical rule and the typing rule have identical structure!
 
 ### Identity: $A \to A$
 
-**Logical proof**: "If we assume $A$, then we have $A$"
+Logical proof: "If we assume $A$, then we have $A$"
 
-**Program**: $\lambda x:A.x \quad : \quad A \to A$
+Program: $\lambda x:A.x \quad : \quad A \to A$
 
 ### Composition: $(A \to B) \to (B \to C) \to (A \to C)$
 
-**Logical proof**: "If we can prove $A \to B$ and $B \to C$, then we can prove $A \to C$"
+Logical proof: "If we can prove $A \to B$ and $B \to C$, then we can prove $A \to C$"
 
-**Program**: $\lambda f:(A \to B).\lambda g:(B \to C).\lambda x:A.g \; (f \; x)$
+Program: $\lambda f:(A \to B).\lambda g:(B \to C).\lambda x:A.g \; (f \; x)$
 
 ### Constant Function: $A \to B \to A$
 
-**Logical proof**: "If we have $A$ and $B$, then we still have $A$"
+Logical proof: "If we have $A$ and $B$, then we still have $A$"
 
-**Program**: $\lambda x:A.\lambda y:B.x \quad : \quad A \to B \to A$
+Program: $\lambda x:A.\lambda y:B.x \quad : \quad A \to B \to A$
 
 ---
 
 # Extending the Correspondence
 
-<div h-2 />
+<div h-5 />
 
-### Conjunction (Logical AND) $\Rightarrow$ Product Types:
+### Logical AND $A \land B$ $\Rightarrow$ Product Types $A \times B$
 
-**Logic**: $A \land B$ means "both $A$ and $B$"
-
-**Programming**: Pair type $(A, B)$ with:
 - Constructor: $\langle M, N \rangle : A \times B$
 - Eliminators: $\pi_1 : A \times B \to A$ and $\pi_2 : A \times B \to B$
 
-### Disjunction (Logical OR) $\Rightarrow$ Sum Types:
+<div h-5 />
 
-**Logic**: $A \lor B$ means "either $A$ or $B$"
+### Logical OR $A \lor B$ $\Rightarrow$ Sum Types $A + B$
 
-**Programming**: Sum type $A + B$ with:
 - Constructors: $\text{inl} : A \to A + B$ and $\text{inr} : B \to A + B$  
 - Eliminator: Case analysis
 
----
+<div h-5 />
 
-### Truth and Falsehood:
+### Truth and Falsehood
 
-- **True** $\top$ corresponds to unit type $\mathbf{1}$ (exactly one value)
-- **False** $\bot$ corresponds to empty type $\mathbf{0}$ (no values)
+- True $\top$ corresponds to unit type $()$ (exactly one value)
+- False $\bot$ corresponds to empty type $\mathbf{None}$ (no values)
 
 ---
 
 # Logical Theorems as Typed Programs
 
-<div h-1 />
+<div h-5 />
 
-### De Morgan's Law: $\neg(A \land B) \to (\neg A \lor \neg B)$
+### Simple Example: $(A \land B) \to (A \lor B)$
 
-Using $\neg A = A \to \bot$ and encoding with product/sum types:
+$$\lambda x:(A \times B).\text{inl}(\pi_1 \; x)$$
 
-$$\lambda f:(A \times B \to \bot).\lambda p:A \times B.\text{inl}(\lambda a:A.f \; \langle a, \pi_2 \; p \rangle)$$
+<div h-5 />
 
 ### Distributivity: $A \land (B \lor C) \to (A \land B) \lor (A \land C)$
 
 $$\lambda p:A \times (B + C).\text{case} \; (\pi_2 \; p) \; \text{of} \; (\text{inl} \; b \Rightarrow \text{inl} \; \langle \pi_1 \; p, b \rangle \;|\; \text{inr} \; c \Rightarrow \text{inr} \; \langle \pi_1 \; p, c \rangle)$$
 
-<div h-2 />
+<div h-5 />
 
-### Key Insight:
+### Extractivity: $(A \land B) \lor (A \land C) \to A \land (B \lor C)$
 
-Every constructive logical theorem corresponds to a computable function! Non-constructive proofs (using excluded middle) don't translate to programs.
+$$\lambda x: (A \times B) + (A \times C).\text{case } x \text{ of } (\text{inl } p \Rightarrow \langle \pi_1 \; p, \text{inl}(\pi_2 \; p) \rangle \; | \; \text{inr } q \Rightarrow \langle \pi_1 \; q, \text{inr}(\pi_2 \;q) \rangle)$$
 
 ---
 
@@ -1016,16 +1010,16 @@ The connection between types and logic becomes even more profound.
 | Implication $(A \to B)$ | Function type | $\tau_1 \to \tau_2$ |
 | Conjunction $(A \land B)$ | Product type | $\tau_1 \times \tau_2$ |
 | Disjunction $(A \lor B)$ | Sum type | $\tau_1 + \tau_2$ |
-| True proposition | Unit type | $\mathbf{1}$ |
-| False proposition | Empty type | $\mathbf{0}$ |
+| True proposition | Unit type | $()$ |
+| False proposition | Empty type | $\mathbf{None}$ |
 
 <div h-2 />
 
 ### Modern Applications:
 
-- **Proof assistants**: Coq, Lean, Agda use this correspondence for formal verification
-- **Program synthesis**: Generate programs from logical specifications
-- **Dependent types**: Types that depend on values, enabling rich specifications
+- Proof assistants: Coq, Lean, Agda use this correspondence for formal verification
+- Program synthesis: Generate programs from logical specifications
+- Dependent types: Types that depend on values, enabling rich specifications
 
 ---
 
@@ -1035,23 +1029,19 @@ The connection between types and logic becomes even more profound.
 
 We have seen the journey of lambda calculus from pure mathematics to practical computing:
 
-<v-clicks>
+1. Pure Lambda Calculus: Captures the essence of computation through function abstraction and application
 
-1. **Pure Lambda Calculus**: Captures the essence of computation through function abstraction and application
+2. Church Encodings: Shows computational universality - anything computable can be expressed
 
-2. **Church Encodings**: Shows computational universality - anything computable can be expressed
+3. Combinators: Demonstrate that even variable names are not essential
 
-3. **Combinators**: Demonstrate that even variable names are not essential
+4. Type Systems: Add safety and structure while maintaining expressiveness
 
-4. **Type Systems**: Add safety and structure while maintaining expressiveness
-
-5. **Modern Impact**: Forms the theoretical foundation for programming language design and formal verification
-
-</v-clicks>
+5. Modern Impact: Forms the theoretical foundation for programming language design and formal verification
 
 <div h-3 />
 
-<div text-center text-3xl color-blue v-click>
+<div text-center text-3xl color-blue>
 Lambda calculus remains a powerful bridge between mathematical theory and computational practice.
 </div>
 
