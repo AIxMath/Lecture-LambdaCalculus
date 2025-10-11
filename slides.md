@@ -21,7 +21,7 @@ mdc: true
 </div>
 
 <div class="abs-br m-6 text-xl">
-  <a href="https://github.com/AIxMath/Lecture-LambdaCalculus" target="_blank" class="slidev-icon-btn">
+  <a href="https://github.com/AIxMath/Lecture-TOC" target="_blank" class="slidev-icon-btn">
     <carbon:logo-github />
   </a>
 </div>
@@ -41,11 +41,11 @@ If you've learnt or heard of Turing Machine, you probably know the Chomsky Hiera
 
 There are two other models as powerful as Turing Machine -- the Lambda Calculus and Primitive Recursion.
 
-Today we are going to discuss about the Lambda Calculus. We will explore how it originated from mathematics, crossed the bridge between mathematics and computer science, and achieved significant breakthroughs in the field of computing.
+Today we are going to discuss the Lambda Calculus. We will explore how it originated from mathematics, crossed the bridge between mathematics and computer science, and achieved significant breakthroughs in the field of computing.
 
 ---
 
-# Table of Content
+# Table of Contents
 
 <!-- TOC Here -->
 
@@ -227,7 +227,7 @@ $$
 
 <div />
 
-Now $f(x)=x+1$, $g(x)=x\times2$, let's calculate $(f\circ g)(3)$ in Lambda Calculas.
+Now $f(x)=x+1$, $g(x)=x\times2$, let's calculate $(f\circ g)(3)$ in Lambda Calculus.
 
 $$\text{compose} = \lambda fgx.f(g(x))$$
 $$\text{double} = \lambda y.y \times 2$$
@@ -387,7 +387,7 @@ These operations are more complex and showcase the power of lambda calculus.
 
 $$\text{PRED} = \lambda nfx.n \; (\lambda gh.h \; (g \; f)) \; (\lambda u.x) \; (\lambda u.u)$$
 
-Noticed that $\text{PRED} \; 0 = 0$.
+Note that $\text{PRED} \; 0 = 0$.
 
 ### Zero Test
 
@@ -571,7 +571,7 @@ $$F \; (Y \; F) = Y \; F$$
 
 This means $Y \; F$ calls $F$ with itself as an argument, enabling recursion!
 
-Here we give that $\mathbf{Y} = \lambda f.(\lambda x.f \; (x \; x)) \; (\lambda x.f \; (x \; x))$ without a proof.
+We define $\mathbf{Y} = \lambda f.(\lambda x.f \; (x \; x)) \; (\lambda x.f \; (x \; x))$ without providing a proof here.
 
 ---
 
