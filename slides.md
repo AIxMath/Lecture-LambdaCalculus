@@ -50,11 +50,11 @@ Today we are going to discuss about the Lambda Calculus. We will explore how it 
 <!-- TOC Here -->
 
 * Basics of Lambda Calculus
-* Boolean Algebra and Natural Number
-* Combinators
-* Appliances in Lean
+* Boolean Algebra and Natural Numbers
+* Combinators and Fixed Points
+* Type-Safe Lambda Calculus
+* Type Systems and Safety Theorems
 * Curry-Howard Correspondence
-* Type Systems in Programming Languages
 
 ---
 
@@ -609,3 +609,454 @@ $$
 $$
 
 ---
+
+# The Problem with Untyped Lambda Calculus
+
+While pure lambda calculus is powerful, it allows nonsensical computations.
+
+### Examples of problematic expressions:
+
+$$(\lambda x.x \; x) \; (\lambda x.x \; x)$$
+
+This creates infinite loops that never terminate.
+
+$$\text{TRUE} \; 3 \; (\lambda y.y)$$
+
+This applies a boolean to a number and a function, which is meaningless.
+
+### The core issues:
+
+- No way to prevent ill-formed expressions
+- Functions can be applied to inappropriate arguments
+- No static guarantees about program behavior
+
+<div h-3 />
+
+<div text-center text-3xl color-blue>
+Type Systems provide the solution!
+</div>
+
+---
+
+# What is a Type System?
+
+A type system is a formal framework that assigns types to expressions and enforces constraints on how they can be combined.
+
+<div h-3 />
+
+### Goals of Type Systems:
+
+- Safety: Prevent runtime errors by catching type mismatches at compile time
+- Documentation: Types serve as machine-checked documentation
+- Optimization: Enable compiler optimizations based on type information
+- Abstraction: Provide interfaces that hide implementation details
+
+<div h-3 />
+
+### Types as Logical Propositions:
+
+The Curry-Howard correspondence shows that:
+- Types correspond to logical propositions
+- Programs correspond to proofs
+- Type checking corresponds to proof verification
+
+---
+
+# Simple Types in Lambda Calculus
+
+<div h-2 />
+
+### Type Syntax:
+
+$$
+\begin{align}
+\tau ::= \;&\alpha & \text{(type variable)} \\
+     |  \;&\tau_1 \to \tau_2 & \text{(function type)}
+\end{align}
+$$
+
+### Examples:
+
+$$
+\begin{align}
+\alpha &\quad \text{some base type} \\
+\alpha \to \alpha &\quad \text{identity function type} \\
+\alpha \to \beta \to \alpha &\quad \text{constant function type} \\
+(\alpha \to \beta) \to \alpha \to \beta &\quad \text{function application type}
+\end{align}
+$$
+
+### Interpretation:
+
+- $\tau_1 \to \tau_2$ represents functions that take inputs of type $\tau_1$ and return outputs of type $\tau_2$
+- Function types are right-associative: $\alpha \to \beta \to \gamma$ means $\alpha \to (\beta \to \gamma)$
+
+---
+
+# Typed Lambda Calculus Syntax
+
+<div h-1 />
+
+### Term Syntax (with type annotations):
+
+$$
+\begin{align}
+M ::= \;&x & \text{(variable)} \\
+     |  \;&\lambda x:\tau.M & \text{(typed abstraction)} \\
+     |  \;&M \; N & \text{(application)}
+\end{align}
+$$
+
+### Type Environments:
+
+A type environment $\Gamma$ is a finite mapping from variables to types:
+
+$$\Gamma ::= \emptyset \;|\; \Gamma, x:\tau$$
+
+<div h-1 />
+
+### Examples:
+
+$$
+\begin{align}
+\lambda x:\alpha.x &\quad \text{identity function with explicit type} \\
+\lambda f:(\alpha \to \beta).\lambda x:\alpha.f \; x &\quad \text{application function} \\
+\lambda x:\alpha.\lambda y:\beta.x &\quad \text{constant function (K combinator)}
+\end{align}
+$$
+
+---
+
+# Type Inference Rules
+
+The typing judgment $\Gamma \vdash M : \tau$ means "in environment $\Gamma$, term $M$ has type $\tau$".
+
+<div h-2 />
+
+### Variable Rule:
+$$\frac{x:\tau \in \Gamma}{\Gamma \vdash x : \tau} \;\text{(VAR)}$$
+
+### Abstraction Rule:
+$$\frac{\Gamma, x:\tau_1 \vdash M : \tau_2}{\Gamma \vdash \lambda x:\tau_1.M : \tau_1 \to \tau_2} \;\text{(ABS)}$$
+
+### Application Rule:
+$$\frac{\Gamma \vdash M : \tau_1 \to \tau_2 \quad \Gamma \vdash N : \tau_1}{\Gamma \vdash M \; N : \tau_2} \;\text{(APP)}$$
+
+<div h-2 />
+
+These rules form a complete type system for the simply typed lambda calculus.
+
+---
+
+# Type Derivation Examples
+
+<div h-1 />
+
+### Example 1: Identity Function
+
+$$
+\frac{x:\alpha \in x:\alpha}{x:\alpha \vdash x : \alpha} \;\text{(VAR)}
+$$
+
+$$
+\frac{x:\alpha \vdash x : \alpha}{\emptyset \vdash \lambda x:\alpha.x : \alpha \to \alpha} \;\text{(ABS)}
+$$
+
+<div h-2 />
+
+### Example 2: Function Application
+
+$$
+\frac{
+  \frac{f:\alpha \to \beta \in f:\alpha \to \beta, x:\alpha}{f:\alpha \to \beta, x:\alpha \vdash f : \alpha \to \beta} \;\text{(VAR)}
+  \quad
+  \frac{x:\alpha \in f:\alpha \to \beta, x:\alpha}{f:\alpha \to \beta, x:\alpha \vdash x : \alpha} \;\text{(VAR)}
+}{f:\alpha \to \beta, x:\alpha \vdash f \; x : \beta} \;\text{(APP)}
+$$
+
+$$
+\frac{f:\alpha \to \beta, x:\alpha \vdash f \; x : \beta}{f:\alpha \to \beta \vdash \lambda x:\alpha.f \; x : \alpha \to \beta} \;\text{(ABS)}
+$$
+
+$$
+\frac{f:\alpha \to \beta \vdash \lambda x:\alpha.f \; x : \alpha \to \beta}{\emptyset \vdash \lambda f:(\alpha \to \beta).\lambda x:\alpha.f \; x : (\alpha \to \beta) \to \alpha \to \beta} \;\text{(ABS)}
+$$
+
+---
+
+# Typing Church Encodings
+
+Now we can assign proper types to our Church encodings.
+
+### Church Booleans:
+
+$$
+\begin{align}
+\text{TRUE} &: \alpha \to \beta \to \alpha \\
+\text{FALSE} &: \alpha \to \beta \to \beta \\
+\text{IF} &: (\alpha \to \beta \to \gamma) \to \alpha \to \beta \to \gamma \\
+\text{AND} &: (\alpha \to \beta \to \alpha) \to (\alpha \to \beta \to \alpha) \to (\alpha \to \beta \to \alpha)
+\end{align}
+$$
+
+### Church Numerals:
+
+$$
+\begin{align}
+0, 1, 2, \ldots &: (\alpha \to \alpha) \to \alpha \to \alpha \\
+\text{SUCC} &: ((\alpha \to \alpha) \to \alpha \to \alpha) \to (\alpha \to \alpha) \to \alpha \to \alpha \\
+\text{ADD} &: ((\alpha \to \alpha) \to \alpha \to \alpha) \to ((\alpha \to \alpha) \to \alpha \to \alpha) \to (\alpha \to \alpha) \to \alpha \to \alpha
+\end{align}
+$$
+
+Notice that Church numerals all have the same type structure!
+
+---
+
+# What Cannot Be Typed?
+
+### Self-Application
+
+$$\lambda x.x \; x$$
+
+This would require $x$ to have type $\tau \to \tau'$ and simultaneously type $\tau$, which is impossible unless we allow infinite types.
+
+### Fixed-Point Combinator
+
+$$\mathbf{Y} = \lambda f.(\lambda x.f \; (x \; x)) \; (\lambda x.f \; (x \; x))$$
+
+The $\mathbf{Y}$ combinator cannot be typed because it also involves self-application.
+
+### Implications
+
+- Simply typed lambda calculus is strongly normalizing: all well-typed programs terminate
+- We cannot express general recursion in simply typed lambda calculus
+- This is both a limitation (less expressiveness) and a feature (guaranteed termination)
+
+---
+
+# Type Safety Theorems
+
+The simply typed lambda calculus satisfies two fundamental safety properties.
+
+### Preservation (Subject Reduction): Evaluation preserves types.
+
+If $\Gamma \vdash M : \tau$ and $M \rightarrow_\beta N$, then $\Gamma \vdash N : \tau$.
+
+### Progress: Well-typed closed terms either are values or can take a step.
+
+If $\emptyset \vdash M : \tau$, then either:
+1. $M$ is a value (normal form), or  
+2. There exists $N$ such that $M \rightarrow_\beta N$.
+
+<div h-3 />
+
+### Combined Type Safety
+
+Together, these theorems guarantee that well-typed programs cannot "go wrong" - they either terminate with a value of the expected type or diverge, but never encounter runtime type errors.
+
+---
+
+# Extensions to Simply Typed Lambda Calculus
+
+The simply typed lambda calculus forms the foundation for many extensions:
+
+### Polymorphism (System F):
+
+$$\Lambda \alpha.\lambda x:\alpha.x \quad : \quad \forall \alpha.\alpha \to \alpha$$
+
+Allows functions that work with multiple types.
+
+### Dependent Types:
+
+$$\lambda n:\text{Nat}.\lambda v:\text{Vec}(\alpha, n).\text{head}(v) \quad : \quad \Pi n:\text{Nat}.\text{Vec}(\alpha, n) \to \alpha$$
+
+Types that depend on values.
+
+### Recursive Types:
+
+$$\mu \alpha.\alpha \to \alpha$$
+
+Allows self-referential types, enabling recursion while maintaining type safety.
+
+---
+
+# The Curry-Howard Correspondence
+
+One of the most profound discoveries in logic and computer science.
+
+<div h-1 />
+
+<div text-3xl text-blue text-center>Types are propositions, programs are proofs.</div>
+
+<div h-4 />
+
+### Historical Background
+
+- Haskell Curry (1934): Observed similarity between combinatory logic and propositional logic
+
+- William Howard (1969): Made the connection precise for lambda calculus and natural deduction
+
+- Also known as the **Propositions-as-Types Interpretation**
+
+<div h-3 />
+
+### The Core Insight
+
+There is a perfect correspondence between constructive proofs in logic and programs in typed lambda calculus.
+
+---
+
+# The Basic Correspondence
+
+<div h-1 />
+
+### Fundamental Mappings:
+
+| Logic | Type Theory | Lambda Calculus |
+|-------|-------------|-----------------|
+| Proposition $A$ | Type $\tau$ | Type $\tau$ |
+| Proof of $A$ | Term of type $\tau$ | $M : \tau$ |
+| Assumption | Variable declaration | $x : \tau$ |
+| Implication $A \to B$ | Function type $\tau_1 \to \tau_2$ | $\lambda x:\tau_1.M:\tau_2$ |
+
+### Modus Ponens: From $A$ and $A \to B$, derive $B$
+
+$$
+\frac{\Gamma \vdash M : A \quad \Gamma \vdash N : A \to B}{\Gamma \vdash N \; M : B}
+$$
+
+The logical rule and the typing rule have identical structure!
+
+---
+
+# Proofs as Programs: Examples
+
+<div h-1 />
+
+### Identity: $A \to A$
+
+**Logical proof**: "If we assume $A$, then we have $A$"
+
+**Program**: $\lambda x:A.x \quad : \quad A \to A$
+
+### Composition: $(A \to B) \to (B \to C) \to (A \to C)$
+
+**Logical proof**: "If we can prove $A \to B$ and $B \to C$, then we can prove $A \to C$"
+
+**Program**: $\lambda f:(A \to B).\lambda g:(B \to C).\lambda x:A.g \; (f \; x)$
+
+### Constant Function: $A \to B \to A$
+
+**Logical proof**: "If we have $A$ and $B$, then we still have $A$"
+
+**Program**: $\lambda x:A.\lambda y:B.x \quad : \quad A \to B \to A$
+
+---
+
+# Extending the Correspondence
+
+<div h-2 />
+
+### Conjunction (Logical AND) $\Rightarrow$ Product Types:
+
+**Logic**: $A \land B$ means "both $A$ and $B$"
+
+**Programming**: Pair type $(A, B)$ with:
+- Constructor: $\langle M, N \rangle : A \times B$
+- Eliminators: $\pi_1 : A \times B \to A$ and $\pi_2 : A \times B \to B$
+
+### Disjunction (Logical OR) $\Rightarrow$ Sum Types:
+
+**Logic**: $A \lor B$ means "either $A$ or $B$"
+
+**Programming**: Sum type $A + B$ with:
+- Constructors: $\text{inl} : A \to A + B$ and $\text{inr} : B \to A + B$  
+- Eliminator: Case analysis
+
+---
+
+### Truth and Falsehood:
+
+- **True** $\top$ corresponds to unit type $\mathbf{1}$ (exactly one value)
+- **False** $\bot$ corresponds to empty type $\mathbf{0}$ (no values)
+
+---
+
+# Logical Theorems as Typed Programs
+
+<div h-1 />
+
+### De Morgan's Law: $\neg(A \land B) \to (\neg A \lor \neg B)$
+
+Using $\neg A = A \to \bot$ and encoding with product/sum types:
+
+$$\lambda f:(A \times B \to \bot).\lambda p:A \times B.\text{inl}(\lambda a:A.f \; \langle a, \pi_2 \; p \rangle)$$
+
+### Distributivity: $A \land (B \lor C) \to (A \land B) \lor (A \land C)$
+
+$$\lambda p:A \times (B + C).\text{case} \; (\pi_2 \; p) \; \text{of} \; (\text{inl} \; b \Rightarrow \text{inl} \; \langle \pi_1 \; p, b \rangle \;|\; \text{inr} \; c \Rightarrow \text{inr} \; \langle \pi_1 \; p, c \rangle)$$
+
+<div h-2 />
+
+### Key Insight:
+
+Every constructive logical theorem corresponds to a computable function! Non-constructive proofs (using excluded middle) don't translate to programs.
+
+---
+
+# The Curry-Howard Correspondence Revisited
+
+The connection between types and logic becomes even more profound.
+
+| Logic | Programming | Type Theory |
+|-------|-------------|-------------|
+| Proposition | Type | Type |
+| Proof | Program | Term |
+| Implication $(A \to B)$ | Function type | $\tau_1 \to \tau_2$ |
+| Conjunction $(A \land B)$ | Product type | $\tau_1 \times \tau_2$ |
+| Disjunction $(A \lor B)$ | Sum type | $\tau_1 + \tau_2$ |
+| True proposition | Unit type | $\mathbf{1}$ |
+| False proposition | Empty type | $\mathbf{0}$ |
+
+<div h-2 />
+
+### Modern Applications:
+
+- **Proof assistants**: Coq, Lean, Agda use this correspondence for formal verification
+- **Program synthesis**: Generate programs from logical specifications
+- **Dependent types**: Types that depend on values, enabling rich specifications
+
+---
+
+# Conclusion: From Mathematics to Computation
+
+<div h-3 />
+
+We have seen the journey of lambda calculus from pure mathematics to practical computing:
+
+<v-clicks>
+
+1. **Pure Lambda Calculus**: Captures the essence of computation through function abstraction and application
+
+2. **Church Encodings**: Shows computational universality - anything computable can be expressed
+
+3. **Combinators**: Demonstrate that even variable names are not essential
+
+4. **Type Systems**: Add safety and structure while maintaining expressiveness
+
+5. **Modern Impact**: Forms the theoretical foundation for programming language design and formal verification
+
+</v-clicks>
+
+<div h-3 />
+
+<div text-center text-3xl color-blue v-click>
+Lambda calculus remains a powerful bridge between mathematical theory and computational practice.
+</div>
+
+---
+
+<div h-44 />
+
+<div text-7xl text-center>Thanks for listening.</div>
