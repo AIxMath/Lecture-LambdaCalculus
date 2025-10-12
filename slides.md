@@ -795,7 +795,7 @@ $$
 \text{TRUE} &: \alpha \to \beta \to \alpha \\
 \text{FALSE} &: \alpha \to \beta \to \beta \\
 \text{IF} &: (\alpha \to \beta \to \gamma) \to \alpha \to \beta \to \gamma \\
-\text{AND} &: (\alpha \to \beta \to \alpha) \to (\alpha \to \beta \to \alpha) \to (\alpha \to \beta \to \alpha)
+\text{AND} &: (\alpha \to \beta \to \gamma) \to (\alpha \to \beta \to \gamma) \to (\alpha \to \beta \to \gamma)
 \end{align}
 $$
 
