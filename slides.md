@@ -3,6 +3,8 @@ theme: seriph
 background: asset/background.avif
 title: Theory of Computation
 info: From Lambda Calculus to Computer Application Practice
+author: Zecyel
+date: 2025-10-12
 drawings:
   persist: false
 transition: slide-left
