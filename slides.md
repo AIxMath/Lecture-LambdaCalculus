@@ -40,7 +40,7 @@ If you've learnt or heard of Turing Machine, you probably know the Chomsky Hiera
 - Type 2: Context-Free (Pushdown Automaton)
 - Type 3: Regular (Finite Automaton)
 
-There are two other models as powerful as Turing Machine -- the Lambda Calculus and Primitive Recursion.
+There are two other models as powerful as Turing Machine -- the Lambda Calculus and General Recursive Functions.
 
 Today we are going to discuss the Lambda Calculus. We will explore how it originated from mathematics, crossed the bridge between mathematics and computer science, and achieved significant breakthroughs in the field of computing.
 
@@ -48,13 +48,18 @@ Today we are going to discuss the Lambda Calculus. We will explore how it origin
 
 # Table of Contents
 
-<!-- TOC Here -->
+<div h-5 />
 
 * Basics of Lambda Calculus
+
 * Boolean Algebra and Natural Numbers
+
 * Combinators and Fixed Points
+
 * Type-Safe Lambda Calculus
+
 * Type Systems and Safety Theorems
+
 * Curry-Howard Correspondence
 
 ---
